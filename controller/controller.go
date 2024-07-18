@@ -23,8 +23,10 @@ func Findtc(c *fiber.Ctx)error {
 	endDate := c.Query("endDate")
 
 	if(storyID!=""||version!=""||applicationName!=""||description!=""||startDate!=""||endDate!=""){
+		//condition search 
 		fmt.Println("have")
 	}else{
+		//search all data
 		fmt.Println("don't have")
 	}
 	
