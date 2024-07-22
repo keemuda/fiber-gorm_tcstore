@@ -6,6 +6,8 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"tcstorego/model"
+
 )
 
 var DBCon *gorm.DB
@@ -17,6 +19,7 @@ func ConnectDB() {
 		log.Fatal("Failed to connect to database. \n", err)
 	}
 	log.Println("connected")
+	db.AutoMigrate(&model.Testcase{})
 	DBCon = db
 }
 
