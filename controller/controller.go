@@ -25,14 +25,14 @@ func Findtc(c *fiber.Ctx) error {
 	startDate := c.Query("startDate")
 	endDate := c.Query("endDate")
 
-	if storyID == "" || version == "" || applicationName == "" || description == "" || startDate == "" || endDate == "" {
+	if storyID != "" || version != "" || applicationName != "" || description != "" || startDate != "" || endDate != "" {
+		//condition search
+		fmt.Println("have")
+
+	} else {
 
 		//search all data
 		fmt.Println("don't have")
-	} else {
-
-		//condition search
-		fmt.Println("have")
 	}
 
 	fmt.Println(c.Queries())
@@ -43,6 +43,9 @@ func Addtc(c *fiber.Ctx) error {
 	tc := new(model.Testcase)
 	if err := c.BodyParser(tc); err != nil {
 		return c.Status(400).JSON(err.Error())
+	}
+	if tc.StoryID == "" || tc.ApplicationName == "" || tc.FileName == "" {
+		return c.Status(400).JSON("Required field are missing")
 	}
 	database.DBCon.Create(&tc)
 	return c.SendStatus(fiber.StatusOK)
