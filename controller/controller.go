@@ -52,6 +52,23 @@ func Addtc(c *fiber.Ctx) error {
 }
 
 func Edittc(c *fiber.Ctx) error {
+	tc := new(model.Testcase)
+	if err := c.BodyParser(tc); err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+	if tc.StoryID == "" || tc.ApplicationName == "" || tc.FileName == "" {
+		return c.Status(400).JSON("Required field are missing")
+	}
+	updateTC := model.Testcase{
+		StoryID:         tc.StoryID,
+		Version:         tc.Version,
+		ApplicationName: tc.ApplicationName,
+		Description:     tc.Description,
+		Date:            tc.Date,
+	}
+
+	database.DBCon.Model(&model.Testcase{}).Where("TestCaseID = ?", tc.TestCaseID).Updates(updateTC)
+	//This function has not been tested yet.
 	return c.SendStatus(fiber.StatusOK)
 }
 
