@@ -19,8 +19,8 @@ func ConnectDB() {
 		log.Fatal("Failed to connect to database. \n", err)
 	}
 	log.Println("connected")
-	if err:=db.AutoMigrate(&model.Testcase{}); err != nil{
-		log.Fatal("Gorm autoMigrate:",err)
+	if err := db.AutoMigrate(&model.Testcase{}); err != nil {
+		log.Fatal("Gorm autoMigrate:", err)
 	}
 	DBCon = db
 }
