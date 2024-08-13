@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 
 	"tcstorego/database"
 	"tcstorego/model"
@@ -47,7 +48,10 @@ func Addtc(c *fiber.Ctx) error {
 	if tc.StoryID == "" || tc.ApplicationName == "" || tc.FileName == "" {
 		return c.Status(400).JSON("Required field are missing")
 	}
-	database.DBCon.Create(&tc)
+	result := database.DBCon.Create(&tc)
+	if result.Error != nil {
+		return c.Status(500).JSON(result.Error)
+	}
 	return c.SendStatus(fiber.StatusOK)
 }
 
@@ -71,7 +75,14 @@ func Edittc(c *fiber.Ctx) error {
 	//This function has not been tested yet.
 	return c.SendStatus(fiber.StatusOK)
 }
-
+//TODO: check c.Query that can recieve value from front end
 func Deletetc(c *fiber.Ctx) error {
+	value := c.Query("TestCaseID")
+	if value != "" {
+		log.Println("it have value", value)
+	}
+	log.Panicln("did not find :DELETE method")
 	return c.SendStatus(fiber.StatusOK)
+
 }
+
