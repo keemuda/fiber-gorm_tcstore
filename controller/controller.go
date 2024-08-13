@@ -77,9 +77,10 @@ func Edittc(c *fiber.Ctx) error {
 }
 //TODO: check c.Query that can recieve value from front end
 func Deletetc(c *fiber.Ctx) error {
-	value := c.Query("TestCaseID")
-	if value != "" {
-		log.Println("it have value", value)
+	TcID := c.Query("TestCaseID")
+	if TcID != "" {
+		log.Println("it have value", TcID)
+		database.DBCon.Delete(&model.Testcase{},TcID)
 	}
 	log.Panicln("did not find :DELETE method")
 	return c.SendStatus(fiber.StatusOK)
