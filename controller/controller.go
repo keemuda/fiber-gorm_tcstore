@@ -40,6 +40,7 @@ func Findtc(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(c.Queries())
 }
 
+// TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
 func Addtc(c *fiber.Ctx) error {
 	tc := new(model.Testcase)
 	if err := c.BodyParser(tc); err != nil {
@@ -53,6 +54,11 @@ func Addtc(c *fiber.Ctx) error {
 		return c.Status(500).JSON(result.Error)
 	}
 	return c.SendStatus(fiber.StatusOK)
+}
+
+func extractformTC(values map[string][]string) *model.Testcase {
+	tc := new(model.Testcase)
+	return tc
 }
 
 func Edittc(c *fiber.Ctx) error {
@@ -75,14 +81,15 @@ func Edittc(c *fiber.Ctx) error {
 	//This function has not been tested yet.
 	return c.SendStatus(fiber.StatusOK)
 }
-//TODO: check c.Query that can recieve value from front end
+
+// TODO: check c.Query that can recieve value from front end
 func Deletetc(c *fiber.Ctx) error {
-	value := c.Query("TestCaseID")
-	if value != "" {
-		log.Println("it have value", value)
+	TcID := c.Query("TestCaseID")
+	if TcID != "" {
+		log.Println("it have value", TcID)
+		database.DBCon.Delete(&model.Testcase{}, TcID)
 	}
 	log.Panicln("did not find :DELETE method")
 	return c.SendStatus(fiber.StatusOK)
 
 }
-

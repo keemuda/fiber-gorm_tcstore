@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"tcstorego/router"
 
@@ -12,13 +12,14 @@ import (
 )
 
 func main() {
-	fmt.Println("hello world!")
+	log.Println("Starting server!")
 	app := fiber.New()
 	app.Use(cors.New())
 	router.SetRoutes(app)
 	database.ConnectDB()
 
 	app.Listen(":3000")
+
 }
 
 /*ref
