@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"tcstorego/database"
 	"tcstorego/model"
@@ -42,7 +43,7 @@ func Findtc(c *fiber.Ctx) error {
 
 // TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
 func Addtc(c *fiber.Ctx) error {
-	tc := new(model.Testcase)
+	/*tc := new(model.Testcase)
 	if err := c.BodyParser(tc); err != nil {
 		return c.Status(400).JSON(err.Error())
 	}
@@ -52,14 +53,44 @@ func Addtc(c *fiber.Ctx) error {
 	result := database.DBCon.Create(&tc)
 	if result.Error != nil {
 		return c.Status(500).JSON(result.Error)
+	}*/
+	form, err := c.MultipartForm();
+	if err != nil {
+		log.Println("Error read MultipartForm: ", err)
+		return c.Status(400).JSON("Invalid multipart form data")
 	}
+	files := form.File["File"]
+	if len(files) == 0 {
+		return c.Status(400).JSON("No file uploaded with the field 'File'")
+	}
+	file := files[0] //First file! I mean that only one file sent from user. :)
+	c.SaveFile(file,"./excelFile/"+file.Filename)
+	
 	return c.SendStatus(fiber.StatusOK)
 }
 
 func extractformTC(values map[string][]string) *model.Testcase {
-	tc := new(model.Testcase)
+	tc := &model.Testcase{
+		StoryID: values["StoryID"][0],
+		ApplicationName: values["ApplicationName"][0],
+		FileName: values["FileName"][0],
+	}
+	if v, ok := values["Version"]; ok{
+		tc.Version = &v[0]
+	}
+	if d, ok := values["Date"]; ok {
+		date, _ := time.Parse(time.RFC3339, d[0])
+		tc.Date = &date
+	}
+
+	if desc, ok := values["Description"]; ok {
+		tc.Description = &desc[0]
+	}
+
 	return tc
 }
+
+
 
 func Edittc(c *fiber.Ctx) error {
 	tc := new(model.Testcase)
@@ -89,7 +120,7 @@ func Deletetc(c *fiber.Ctx) error {
 		log.Println("it have value", TcID)
 		database.DBCon.Delete(&model.Testcase{}, TcID)
 	}
-	log.Panicln("did not find :DELETE method")
+	log.Println("did not find value in :DELETE method")
 	return c.SendStatus(fiber.StatusOK)
 
 }
