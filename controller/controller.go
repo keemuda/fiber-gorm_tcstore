@@ -19,7 +19,7 @@ func Dududumdum(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.ErrBadRequest.Code)
 }
 
-func Findtc(c *fiber.Ctx) error {
+func FindTestcase(c *fiber.Ctx) error {
 	storyID := c.Query("StoryID")
 	version := c.Query("version")
 	applicationName := c.Query("applicationName")
@@ -42,7 +42,7 @@ func Findtc(c *fiber.Ctx) error {
 }
 
 // TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
-func Addtc(c *fiber.Ctx) error {
+func AddTestcase(c *fiber.Ctx) error {
 	/*tc := new(model.Testcase)
 
 	//Change to extractformTestCase
@@ -123,7 +123,6 @@ func DeleteTestcase(c *fiber.Ctx) error {
 		log.Println("it have value", TestCaseID)
 		database.DBCon.Delete(&model.Testcase{}, TestCaseID)
 	}
-	log.Println("did not find value in :DELETE method")
-	return c.SendStatus(fiber.StatusOK)
-
+	log.Println("deleteTestCase: did not find value TestCaseID")
+	return c.Status(400).JSON("Required field are missing: TestCaseID")
 }
