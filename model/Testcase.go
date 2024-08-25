@@ -13,5 +13,3 @@ type Testcase struct {
 	Date            *time.Time
 	FileName        string `gorm:"not null;size:255"`
 }
-
-//I'm not sure. Is this proper declare struct for gorm?

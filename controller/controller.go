@@ -32,9 +32,16 @@ func FindTestcase(c *fiber.Ctx) error {
 		fmt.Println("have")
 
 	} else {
-
 		//search all data
 		fmt.Println("don't have")
+		testcase := new(model.Testcase)
+		result := database.DBCon.Find(&testcase)
+		log.Println(result.RowsAffected)
+		log.Println(testcase)
+		if result.Error != nil {
+			return c.Status(500).JSON(result.Error) 
+		}
+		return c.Status(200).JSON(testcase)
 	}
 
 	fmt.Println(c.Queries())
@@ -43,32 +50,28 @@ func FindTestcase(c *fiber.Ctx) error {
 
 // TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
 func AddTestcase(c *fiber.Ctx) error {
-	/*tc := new(model.Testcase)
-
-	//Change to extractformTestCase
-	if err := c.BodyParser(tc); err != nil {
-		return c.Status(400).JSON(err.Error())
-	}
-
-
-	//USE
-	if tc.StoryID == "" || tc.ApplicationName == "" || tc.FileName == "" {
-		return c.Status(400).JSON("Required field are missing")
-	}
-	result := database.DBCon.Create(&tc)
-	if result.Error != nil {
-		return c.Status(500).JSON(result.Error)
-	}*/
+	testcase := new(model.Testcase)
 	form, err := c.MultipartForm()
 	if err != nil {
 		log.Println("Error read MultipartForm: ", err)
 		return c.Status(400).JSON("Invalid multipart form data")
 	}
+
+	testcase = extractformTestcase(form.Value)
+	if testcase.StoryID == "" || testcase.ApplicationName == "" || testcase.FileName == "" {
+		return c.Status(400).JSON("Required field are missing")
+	}
+
 	files := form.File["File"]
 	if len(files) == 0 {
 		return c.Status(400).JSON("No file uploaded with the field 'File'")
 	}
-	file := files[0] //First file! I mean that only one file sent from user. :)
+
+	result := database.DBCon.Create(&testcase)
+	if result.Error != nil {
+		return c.Status(500).JSON(result.Error)
+	}
+	file := files[0]
 	c.SaveFile(file, "./excelFile/"+file.Filename)
 
 	return c.SendStatus(fiber.StatusOK)
