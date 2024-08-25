@@ -44,9 +44,14 @@ func Findtc(c *fiber.Ctx) error {
 // TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
 func Addtc(c *fiber.Ctx) error {
 	/*tc := new(model.Testcase)
+
+	//Change to extractformTestCase
 	if err := c.BodyParser(tc); err != nil {
 		return c.Status(400).JSON(err.Error())
 	}
+
+
+	//USE
 	if tc.StoryID == "" || tc.ApplicationName == "" || tc.FileName == "" {
 		return c.Status(400).JSON("Required field are missing")
 	}
@@ -54,7 +59,7 @@ func Addtc(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(500).JSON(result.Error)
 	}*/
-	form, err := c.MultipartForm();
+	form, err := c.MultipartForm()
 	if err != nil {
 		log.Println("Error read MultipartForm: ", err)
 		return c.Status(400).JSON("Invalid multipart form data")
@@ -64,18 +69,18 @@ func Addtc(c *fiber.Ctx) error {
 		return c.Status(400).JSON("No file uploaded with the field 'File'")
 	}
 	file := files[0] //First file! I mean that only one file sent from user. :)
-	c.SaveFile(file,"./excelFile/"+file.Filename)
-	
+	c.SaveFile(file, "./excelFile/"+file.Filename)
+
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func extractformTC(values map[string][]string) *model.Testcase {
+func extractformTestcase(values map[string][]string) *model.Testcase {
 	tc := &model.Testcase{
-		StoryID: values["StoryID"][0],
+		StoryID:         values["StoryID"][0],
 		ApplicationName: values["ApplicationName"][0],
-		FileName: values["FileName"][0],
+		FileName:        values["FileName"][0],
 	}
-	if v, ok := values["Version"]; ok{
+	if v, ok := values["Version"]; ok {
 		tc.Version = &v[0]
 	}
 	if d, ok := values["Date"]; ok {
@@ -90,9 +95,7 @@ func extractformTC(values map[string][]string) *model.Testcase {
 	return tc
 }
 
-
-
-func Edittc(c *fiber.Ctx) error {
+func EditTestcase(c *fiber.Ctx) error {
 	tc := new(model.Testcase)
 	if err := c.BodyParser(tc); err != nil {
 		return c.Status(400).JSON(err.Error())
@@ -114,11 +117,11 @@ func Edittc(c *fiber.Ctx) error {
 }
 
 // TODO: check c.Query that can recieve value from front end
-func Deletetc(c *fiber.Ctx) error {
-	TcID := c.Query("TestCaseID")
-	if TcID != "" {
-		log.Println("it have value", TcID)
-		database.DBCon.Delete(&model.Testcase{}, TcID)
+func DeleteTestcase(c *fiber.Ctx) error {
+	TestCaseID := c.Query("TestCaseID")
+	if TestCaseID != "" {
+		log.Println("it have value", TestCaseID)
+		database.DBCon.Delete(&model.Testcase{}, TestCaseID)
 	}
 	log.Println("did not find value in :DELETE method")
 	return c.SendStatus(fiber.StatusOK)
