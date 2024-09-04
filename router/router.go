@@ -7,9 +7,7 @@ import (
 )
 
 func SetRoutes(app *fiber.App) {
-	app.Get("/", controller.HelloGo)
-	app.Get("/dudu", controller.Dududumdum)
-	app.Get("/findtc", controller.FindTestcase)
-	app.Post("/addtc", controller.AddTestcase)
-	app.Delete("/deletetc", controller.DeleteTestcase)
+	app.Get("/Testcases", controller.FindTestcase)
+	app.Post("/Testcases", controller.AddTestcase)
+	app.Delete("/Testcases", controller.DeleteTestcase)
 }

@@ -11,13 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func HelloGo(c *fiber.Ctx) error {
-	return c.SendString("hello world!")
-}
 
-func Dududumdum(c *fiber.Ctx) error {
-	return c.SendStatus(fiber.ErrBadRequest.Code)
-}
 
 func FindTestcase(c *fiber.Ctx) error {
 	storyID := c.Query("StoryID")
@@ -48,7 +42,7 @@ func FindTestcase(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(c.Queries())
 }
 
-// TODO: find the best way to recive file and data mutipart form data? or just 2 api? (2 api is easier way i think)
+
 func AddTestcase(c *fiber.Ctx) error {
 	testcase := new(model.Testcase)
 	form, err := c.MultipartForm()
