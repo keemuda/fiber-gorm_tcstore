@@ -30,26 +30,3 @@ func ConnectDB() {
 	}
 	DBCon = db
 }
-
-/*
-
-func SearchAll(){
-
-}
-
-func SearchCondition(){
-
-}
-
-func InsertDatatc(){
-
-}
-
-func UpdateDatatc(){
-
-}
-
-func DeleteDatatc(){
-
-}
-*/

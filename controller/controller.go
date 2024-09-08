@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"tcstorego/database"
@@ -10,8 +11,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 )
-
-
 
 func FindTestcase(c *fiber.Ctx) error {
 	storyID := c.Query("StoryID")
@@ -33,7 +32,7 @@ func FindTestcase(c *fiber.Ctx) error {
 		log.Println(result.RowsAffected)
 		log.Println(testcase)
 		if result.Error != nil {
-			return c.Status(500).JSON(result.Error) 
+			return c.Status(500).JSON(result.Error)
 		}
 		return c.Status(200).JSON(testcase)
 	}
@@ -41,7 +40,6 @@ func FindTestcase(c *fiber.Ctx) error {
 	fmt.Println(c.Queries())
 	return c.Status(fiber.StatusOK).JSON(c.Queries())
 }
-
 
 func AddTestcase(c *fiber.Ctx) error {
 	testcase := new(model.Testcase)
@@ -68,7 +66,7 @@ func AddTestcase(c *fiber.Ctx) error {
 	file := files[0]
 	c.SaveFile(file, "./excelFile/"+file.Filename)
 
-	return c.SendStatus(fiber.StatusOK)
+	return c.SendStatus(fiber.StatusCreated)
 }
 
 func extractformTestcase(values map[string][]string) *model.Testcase {
@@ -107,13 +105,10 @@ func EditTestcase(c *fiber.Ctx) error {
 		Description:     tc.Description,
 		Date:            tc.Date,
 	}
-
 	database.DBCon.Model(&model.Testcase{}).Where("TestCaseID = ?", tc.TestCaseID).Updates(updateTC)
-	//This function has not been tested yet.
 	return c.SendStatus(fiber.StatusOK)
 }
 
-// TODO: check c.Query that can recieve value from front end
 func DeleteTestcase(c *fiber.Ctx) error {
 	TestCaseID := c.Query("TestCaseID")
 	if TestCaseID != "" {
@@ -122,4 +117,13 @@ func DeleteTestcase(c *fiber.Ctx) error {
 	}
 	log.Println("deleteTestCase: did not find value TestCaseID")
 	return c.Status(400).JSON("Required field are missing: TestCaseID")
+}
+
+func GetTestcaseFile(c *fiber.Ctx) error {
+	fileName := c.Query("Filename")
+	filepath := fmt.Sprintf("./excel/%s", fileName)
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		return c.Status(fiber.StatusNotFound).JSON(fmt.Sprintf("File (%s) not found", fileName))
+	}
+	return c.SendFile(filepath)
 }
